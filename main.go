@@ -25,7 +25,6 @@ func main() {
 		fmt.Println("Enter daste bache")
 		scanner.Scan()
 		daste = scanner.Text()
-
 		fmt.Println(name, daste)
 
 	}
