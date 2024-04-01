@@ -27,7 +27,6 @@ func main() {
 		scanner.Scan()
 		*command = scanner.Text()
 	}
-
 }
 func runCommand(command string) {
 
