@@ -9,25 +9,30 @@ import (
 
 func main() {
 
-	fmt.Println("Todo App , Start with type: -salam=")
+	fmt.Println("Welcome to Todo App")
 
-	salam := flag.String("salam", "command", "run do you want")
+	command := flag.String("command", "command", "run-command")
 	flag.Parse()
 
-	if *salam == "Ejad-kar" {
-		var name, daste string
-		scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin)
+	var task, category, duedate string
+	if *command == "create-task" {
 
-		fmt.Println("Enter name bache")
+		fmt.Println("Enter new task")
 		scanner.Scan()
-		name = scanner.Text()
+		task = scanner.Text()
+		fmt.Println(task)
 
-		fmt.Println("Enter daste bache")
+	} else if *command == "category" {
+		fmt.Println("Enter new cate")
 		scanner.Scan()
-		daste = scanner.Text()
+		category = scanner.Text()
+		fmt.Println(category)
 
-		fmt.Println("name ", "daste", name, daste)
-
+	} else if *command == "duedate" {
+		fmt.Println("Enter new date")
+		scanner.Scan()
+		duedate = scanner.Text()
+		fmt.Println(duedate)
 	}
-
 }

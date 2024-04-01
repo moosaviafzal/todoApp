@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/app1-Golang.iml" filepath="$PROJECT_DIR$/.idea/app1-Golang.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/todoApp.iml" filepath="$PROJECT_DIR$/.idea/todoApp.iml" />
     </modules>
   </component>
 </project>
