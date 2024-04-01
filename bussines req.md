@@ -38,9 +38,9 @@
 
 
 
-
 (3)Behavior(موجودیت ها چه رفتاری دارند که از یوزراستوری میفهمیم)
-User story
+
+User story(**`~~~~use cases~~~~`**)
 -user should be register
 -user should be able login to the application
 -user can create a new category
