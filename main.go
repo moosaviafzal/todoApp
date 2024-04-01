@@ -11,28 +11,38 @@ func main() {
 
 	fmt.Println("Welcome to Todo App")
 
+	scanner := bufio.NewScanner(os.Stdin)
 	command := flag.String("command", "command", "run-command")
 	flag.Parse()
 
-	scanner := bufio.NewScanner(os.Stdin)
-	var task, category, duedate string
 	if *command == "create-task" {
+		var name, category string
 
-		fmt.Println("Enter new task")
+		fmt.Println("Enter task name")
 		scanner.Scan()
-		task = scanner.Text()
-		fmt.Println(task)
-
-	} else if *command == "category" {
-		fmt.Println("Enter new cate")
+		name = scanner.Text()
+		fmt.Println("Enter category name")
 		scanner.Scan()
 		category = scanner.Text()
-		fmt.Println(category)
+		fmt.Println("name task", name, "category name", category)
+
+	} else if *command == "category" {
+		var name, color string
+
+		fmt.Println("Enter cate name")
+		scanner.Scan()
+		name = scanner.Text()
+		fmt.Println("Enter color category")
+		scanner.Scan()
+		color = scanner.Text()
+		fmt.Println("cate name:", name, "cate color:", color)
 
 	} else if *command == "duedate" {
+		var date string
+
 		fmt.Println("Enter new date")
 		scanner.Scan()
-		duedate = scanner.Text()
-		fmt.Println(duedate)
+		date = scanner.Text()
+		fmt.Println("date is :", date)
 	}
 }
