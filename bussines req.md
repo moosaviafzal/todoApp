@@ -26,6 +26,7 @@
 (1)User
     (2)property(خصوصیت):
         Id
+        Name
         Email
         password
 (3)Behavior:

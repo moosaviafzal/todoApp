@@ -9,6 +9,7 @@ import (
 
 type User struct {
 	ID       int
+	Name     string
 	Email    string
 	Password string
 }
@@ -19,6 +20,28 @@ func main() {
 	fmt.Println("Welcome To App")
 	command := flag.String("command", "no command", "run command")
 	flag.Parse()
+
+	scn := bufio.NewScanner(os.Stdin)
+	fmt.Println("please enter the email")
+	scn.Scan()
+	email := scn.Text()
+	fmt.Println("please enter the password")
+	scn.Scan()
+	password := scn.Text()
+
+	notfound := true
+	for _, user := range userStorage {
+		if user.Email == email && user.Password == password {
+			notfound = false
+			fmt.Println("Youre logged in")
+		} else {
+			fmt.Println("Your email or pass incorrect")
+		}
+	}
+	if notfound {
+		fmt.Println("The email or password is incorrect")
+		return
+	}
 
 	for {
 		runCommand(*command)
@@ -74,8 +97,11 @@ func createCategory() {
 	fmt.Println("\ncateogry name is:", title, "\ncolor category is:", color)
 }
 func registerUser() {
-	var email, password string
+	var name, email, password string
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Enter user name")
+	scanner.Scan()
+	name = scanner.Text()
 	fmt.Println("Enter user email")
 	scanner.Scan()
 	email = scanner.Text()
@@ -87,6 +113,7 @@ func registerUser() {
 
 	user := User{
 		ID:       len(userStorage) + 1,
+		Name:     name,
 		Email:    email,
 		Password: password,
 	}
