@@ -32,9 +32,9 @@ type Category struct {
 }
 
 var userStorage []User
-var authenticatedUser *User
 var taskStorage []Task
 var categoryStorage []Category
+var authenticatedUser *User
 
 func main() {
 	fmt.Println("Welcome To App")
@@ -90,7 +90,7 @@ func runCommand(command string) {
 
 func listCategory() {
 	for _, listcat := range categoryStorage {
-		if listcat.ID == authenticatedUser.ID {
+		if listcat.UserID == authenticatedUser.ID {
 			fmt.Printf("%+v\n", listcat)
 		}
 	}
@@ -106,6 +106,7 @@ func listTask() {
 }
 func createTask() {
 	var title, category, duedate string
+
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Enter Task title")
 	scanner.Scan()
@@ -116,25 +117,23 @@ func createTask() {
 
 	categoryID, err := strconv.Atoi(category)
 	if err != nil {
-		fmt.Printf("category-id is not valid integer , %v\n", err)
+		fmt.Printf("category-id is not int , %v\n", err)
 
 		return
 	}
-
-	isfound := false
+	ifexist := false
 	for _, c := range categoryStorage {
 		if c.ID == categoryID && c.UserID == authenticatedUser.ID {
-			isfound = true
+			ifexist = true
 
 			break
 		}
 	}
-	if !isfound {
-		fmt.Printf("category-id is not valid\n")
+	if !ifexist {
+		fmt.Println("category id not valid")
 
 		return
 	}
-
 	fmt.Println("Enter Task duedate")
 	scanner.Scan()
 	duedate = scanner.Text()
