@@ -42,10 +42,11 @@
 (3)Behavior(موجودیت ها چه رفتاری دارند که از یوزراستوری میفهمیم)
 
 User story(**`~~~~use cases~~~~`**)
--user should be register
--user should be able login to the application
+-user should be register [*]
+-user should be able login to the application [*]
 -user can create a new category
--user can add a new task
+-user can add a new task [*]
+-user can see the list of task[*]
 -user can see the list of category
 -user can see the Today task
 -user can see the Task by date

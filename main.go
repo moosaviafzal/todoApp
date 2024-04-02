@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 type User struct {
@@ -15,17 +16,25 @@ type User struct {
 }
 
 type Task struct {
-	Id       int
-	Title    string
-	DueDate  string
-	Category string
-	IsDone   bool
-	UserId   int
+	Id         int
+	Title      string
+	DueDate    string
+	CategoryID int
+	IsDone     bool
+	UserID     int
+}
+
+type Category struct {
+	ID     int
+	Title  string
+	Color  string
+	UserID int
 }
 
 var userStorage []User
 var authenticatedUser *User
 var taskStorage []Task
+var categoryStorage []Category
 
 func main() {
 	fmt.Println("Welcome To App")
@@ -64,6 +73,8 @@ func runCommand(command string) {
 		registerUser()
 	case "list-task":
 		listTask()
+	case "list-cat":
+		listCategory()
 	case "login":
 		login()
 	case "exit":
@@ -77,10 +88,19 @@ func runCommand(command string) {
 
 }
 
+func listCategory() {
+	for _, listcat := range categoryStorage {
+		if listcat.ID == authenticatedUser.ID {
+			fmt.Printf("%+v\n", listcat)
+		}
+	}
+
+}
+
 func listTask() {
 	for _, task := range taskStorage {
-		if task.UserId == authenticatedUser.ID {
-			fmt.Println(task)
+		if task.UserID == authenticatedUser.ID {
+			fmt.Printf("%+v\n", task)
 		}
 	}
 }
@@ -90,22 +110,44 @@ func createTask() {
 	fmt.Println("Enter Task title")
 	scanner.Scan()
 	title = scanner.Text()
-	fmt.Println("Enter Task category")
+	fmt.Println("Enter Task category ID")
 	scanner.Scan()
 	category = scanner.Text()
+
+	categoryID, err := strconv.Atoi(category)
+	if err != nil {
+		fmt.Printf("category-id is not valid integer , %v\n", err)
+
+		return
+	}
+
+	isfound := false
+	for _, c := range categoryStorage {
+		if c.ID == categoryID && c.UserID == authenticatedUser.ID {
+			isfound = true
+
+			break
+		}
+	}
+	if !isfound {
+		fmt.Printf("category-id is not valid\n")
+
+		return
+	}
+
 	fmt.Println("Enter Task duedate")
 	scanner.Scan()
 	duedate = scanner.Text()
 
-	task := Task{
-		Id:       len(taskStorage) + 1,
-		Title:    title,
-		DueDate:  duedate,
-		Category: category,
-		IsDone:   false,
-		UserId:   authenticatedUser.ID,
+	t := Task{
+		Id:         len(taskStorage) + 1,
+		Title:      title,
+		DueDate:    duedate,
+		CategoryID: categoryID,
+		IsDone:     false,
+		UserID:     authenticatedUser.ID,
 	}
-	taskStorage = append(taskStorage, task)
+	taskStorage = append(taskStorage, t)
 
 }
 func createCategory() {
@@ -117,6 +159,15 @@ func createCategory() {
 	fmt.Println("Enter color category")
 	scanner.Scan()
 	color = scanner.Text()
+
+	c := Category{
+		ID:     len(categoryStorage) + 1,
+		Title:  title,
+		Color:  color,
+		UserID: authenticatedUser.ID,
+	}
+	categoryStorage = append(categoryStorage, c)
+
 	fmt.Println("\ncateogry name is:", title, "\ncolor category is:", color)
 }
 func registerUser() {
@@ -162,10 +213,9 @@ func login() {
 
 			break
 		}
-		if authenticatedUser == nil {
-			fmt.Println("The email or password is incorrect")
-
-		}
+	}
+	if authenticatedUser == nil {
+		fmt.Println("The email or password is incorrect , try again 0r register-user")
 
 	}
 }
