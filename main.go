@@ -192,9 +192,32 @@ func registerUser() {
 	}
 
 	userStorage = append(userStorage, user)
-	fmt.Printf("userStorage: %+v\n", userStorage)
+	//fmt.Printf("userStorage: %+v\n", userStorage)
 
+	//save user data in user.txt
+
+	path := "user.txt"
+
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("file cant create or append", err)
+
+		return
+	}
+
+	data := fmt.Sprintf("id: %d, name: %s, email: %s, password: %s\n",
+		user.ID, user.Name, user.Email, user.Password)
+	var b = []byte(data)
+
+	var wErr error
+	numberOfWrittenByte, wErr := file.Write(b)
+	if wErr != nil {
+		fmt.Printf("cant write in file ,  %v\n", wErr)
+	}
+	fmt.Println("number of written byte", numberOfWrittenByte)
+	file.Close()
 }
+
 func login() {
 	fmt.Println("Log in process")
 	var email, password string
