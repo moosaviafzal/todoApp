@@ -262,6 +262,7 @@ func registerUser() {
 
 		return
 	}
+	defer file.Close()
 
 	data := fmt.Sprintf("id: %d, name: %s, email: %s, password: %s\n",
 		user.ID, user.Name, user.Email, user.Password)
@@ -273,7 +274,7 @@ func registerUser() {
 		fmt.Printf("cant write in file ,  %v\n", wErr)
 	}
 	fmt.Println("number of written byte", numberOfWrittenByte)
-	file.Close()
+
 }
 
 func login() {
