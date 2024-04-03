@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -32,25 +33,37 @@ type Category struct {
 	UserID int
 }
 
-var userStorage []User
-var taskStorage []Task
-var categoryStorage []Category
-var authenticatedUser *User
+var (
+	userStorage       []User
+	taskStorage       []Task
+	categoryStorage   []Category
+	authenticatedUser *User
+	serializationMode string
+)
 
-const userStoragePath = "user.txt"
+const (
+	userStoragePath               = "user.txt"
+	ManDarAvordiSerializationMode = "mandaravordi"
+	JsonSerializationMode         = "json"
+)
 
 func main() {
 
 	loadUserStorageFromFile()
 
 	fmt.Println("Welcome To App")
+	serializMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
+
 	command := flag.String("command", "no command", "run command")
 	flag.Parse()
 
-	//if *command != "register-user" && *command != "exit" && *command != "login" && authenticatedUser == nil {
-	//	login()
-	//
-	//}
+	switch *serializMode {
+	case ManDarAvordiSerializationMode:
+		serializationMode = ManDarAvordiSerializationMode
+	default:
+		serializationMode = JsonSerializationMode
+
+	}
 
 	for {
 		runCommand(*command)
@@ -70,7 +83,7 @@ func loadUserStorageFromFile() {
 		fmt.Println("cant open the file", err)
 	}
 
-	var data = make([]byte, 200)
+	var data = make([]byte, 1024)
 	_, oErr := file.Read(data)
 	{
 		if oErr != nil {
@@ -268,12 +281,27 @@ func writeUserToFile(user User) {
 	}
 	defer file.Close()
 
-	data := fmt.Sprintf("id: %d, name: %s, email: %s, password: %s\n",
-		user.ID, user.Name, user.Email, user.Password)
-	var b = []byte(data)
+	var data []byte
+	if serializationMode == ManDarAvordiSerializationMode {
+		data = []byte(fmt.Sprintf("id: %d, name: %s, email: %s, password: %s", user.ID, user.Name,
+			user.Email, user.Password))
+	} else if serializationMode == JsonSerializationMode {
+		//json
+		var jErr error
+		data, jErr = json.Marshal(user)
+		if jErr != nil {
+			fmt.Println("cant marshal user to struct", jErr)
+
+			return
+		}
+	} else {
+		fmt.Println("invalid serialization mode")
+
+		return
+	}
 
 	var wErr error
-	numberOfWrittenByte, wErr := file.Write(b)
+	numberOfWrittenByte, wErr := file.Write(data)
 	if wErr != nil {
 		fmt.Printf("cant write in file ,  %v\n", wErr)
 	}

@@ -1,3 +1,1 @@
-id: 1, name: ali, email: moo@, password: 123
-id: 2, name: razi, email: moo, password: 123
-id: 1, name: alirezam, email: savi, password: savi
+id: 1, name: alireza, email: moosavi@gmail.com, password: 123
