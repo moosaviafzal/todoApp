@@ -253,6 +253,10 @@ func registerUser() {
 
 	userStorage = append(userStorage, user)
 	//fmt.Printf("userStorage: %+v\n", userStorage)
+	writeUserToFile(user)
+}
+
+func writeUserToFile(user User) {
 
 	//save user data in user.txt
 
