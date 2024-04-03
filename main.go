@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type User struct {
@@ -36,7 +37,12 @@ var taskStorage []Task
 var categoryStorage []Category
 var authenticatedUser *User
 
+const userStoragePath = "user.txt"
+
 func main() {
+
+	loadUserStorageFromFile()
+
 	fmt.Println("Welcome To App")
 	command := flag.String("command", "no command", "run command")
 	flag.Parse()
@@ -53,6 +59,60 @@ func main() {
 		scanner.Scan()
 		*command = scanner.Text()
 	}
+}
+
+func loadUserStorageFromFile() {
+
+	//load user storage from file
+
+	file, err := os.Open(userStoragePath)
+	if err != nil {
+		fmt.Println("cant open the file", err)
+	}
+
+	var data = make([]byte, 200)
+	_, oErr := file.Read(data)
+	{
+		if oErr != nil {
+			fmt.Println("cant read the file", oErr)
+		}
+		//fmt.Println(data)
+	}
+	var datastr = string(data)
+	userSlice := strings.Split(datastr, "\n")
+	for _, u := range userSlice {
+		if u == "" {
+			continue
+		}
+
+		//fmt.Println("line of file", index, "user", u)
+		var user = User{}
+		userFields := strings.Split(u, ",")
+		for _, field := range userFields {
+			values := strings.Split(field, ": ")
+			fieldName := strings.ReplaceAll(values[0], " ", "")
+			fieldValue := values[1]
+
+			switch fieldName {
+			case "id":
+				id, err := strconv.Atoi(fieldValue)
+				if err != nil {
+					fmt.Println("strconv err", err)
+
+					return
+				}
+				user.ID = id
+			case "name":
+				user.Name = fieldValue
+			case "email":
+				user.Email = fieldValue
+			case "password":
+				user.Password = fieldValue
+			}
+		}
+		fmt.Printf("user %+v\n", user)
+	}
+
 }
 func runCommand(command string) {
 	if command != "register-user" && command != "exit" && command != "login" && authenticatedUser == nil {
@@ -196,9 +256,7 @@ func registerUser() {
 
 	//save user data in user.txt
 
-	path := "user.txt"
-
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(userStoragePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println("file cant create or append", err)
 
