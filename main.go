@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -50,7 +52,7 @@ const (
 
 func main() {
 
-	fmt.Println("Welcome To App")
+	fmt.Println("Welcome To App☻ ♥")
 
 	serializeMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
 	command := flag.String("command", "no command", "run command")
@@ -346,12 +348,17 @@ func registerUser() {
 		ID:       len(userStorage) + 1,
 		Name:     name,
 		Email:    email,
-		Password: password,
+		Password: hashThePassword(password),
 	}
 
 	userStorage = append(userStorage, user)
 	//fmt.Printf("userStorage: %+v\n", userStorage)
 	writeUserToFile(user)
+}
+
+func hashThePassword(password string) string {
+	hash := md5.Sum([]byte(password))
+	return hex.EncodeToString(hash[:])
 }
 
 func login() {
@@ -366,7 +373,7 @@ func login() {
 	password = scanner.Text()
 
 	for _, user := range userStorage {
-		if user.Email == email && user.Password == password {
+		if user.Email == email && user.Password == hashThePassword(password) {
 			authenticatedUser = &user
 
 			break
