@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -49,15 +50,16 @@ const (
 
 func main() {
 
-	loadUserStorageFromFile()
-
 	fmt.Println("Welcome To App")
-	serializMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
 
+	serializeMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
 	command := flag.String("command", "no command", "run command")
 	flag.Parse()
 
-	switch *serializMode {
+	loadUserStorageFromFile(*serializeMode)
+
+	switch *serializeMode {
+
 	case ManDarAvordiSerializationMode:
 		serializationMode = ManDarAvordiSerializationMode
 	default:
@@ -74,7 +76,7 @@ func main() {
 	}
 }
 
-func loadUserStorageFromFile() {
+func loadUserStorageFromFile(serializationMode string) {
 
 	//load user storage from file
 
@@ -92,41 +94,124 @@ func loadUserStorageFromFile() {
 		//fmt.Println(data)
 	}
 	var datastr = string(data)
+
 	userSlice := strings.Split(datastr, "\n")
+
 	for _, u := range userSlice {
-		if u == "" {
-			continue
-		}
+		var userStruct User
 
-		//fmt.Println("line of file", index, "user", u)
-		var user = User{}
-		userFields := strings.Split(u, ",")
-		for _, field := range userFields {
-			values := strings.Split(field, ": ")
-			fieldName := strings.ReplaceAll(values[0], " ", "")
-			fieldValue := values[1]
+		switch serializationMode {
+		case ManDarAvordiSerializationMode:
+			var dErr error
+			userStruct, dErr = deserializeFromMandaravordi(u)
+			if dErr != nil {
+				fmt.Println("can't deserialize user record to user struct", dErr)
 
-			switch fieldName {
-			case "id":
-				id, err := strconv.Atoi(fieldValue)
-				if err != nil {
-					fmt.Println("strconv err", err)
-
-					return
-				}
-				user.ID = id
-			case "name":
-				user.Name = fieldValue
-			case "email":
-				user.Email = fieldValue
-			case "password":
-				user.Password = fieldValue
+				return
 			}
+		case JsonSerializationMode:
+			if u[0] != '{' && u[len(u)-1] != '}' {
+				continue
+			}
+			uErr := json.Unmarshal([]byte(u), &userStruct)
+			if uErr != nil {
+				fmt.Println("can't deserialize user record to user struct with json mode ", uErr)
+
+				return
+			}
+		default:
+			fmt.Println("invalid serialization mode")
+
+			return
 		}
-		fmt.Printf("user %+v\n", user)
+		fmt.Println("unMarshal user", userStruct)
+		userStorage = append(userStorage, userStruct)
 	}
 
 }
+
+func deserializeFromMandaravordi(userStr string) (User, error) {
+
+	if userStr == "" {
+
+		return User{}, errors.New("user string is empty")
+	}
+
+	//fmt.Println("line of file", index, "user", u)
+	var user = User{}
+	userFields := strings.Split(userStr, ",")
+	for _, field := range userFields {
+		values := strings.Split(field, ": ")
+		if len(values) != 2 {
+			fmt.Println("field not valid , skipping...", len(values))
+
+			continue
+		}
+		fieldName := strings.ReplaceAll(values[0], " ", "")
+		fieldValue := values[1]
+
+		switch fieldName {
+		case "id":
+			id, err := strconv.Atoi(fieldValue)
+			if err != nil {
+				return User{}, errors.New("strconv error")
+			}
+			user.ID = id
+		case "name":
+			user.Name = fieldValue
+		case "email":
+			user.Email = fieldValue
+		case "password":
+			user.Password = fieldValue
+		}
+	}
+
+	return User{}, nil
+}
+func writeUserToFile(user User) {
+
+	//save user data in user.txt
+
+	file, err := os.OpenFile(userStoragePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println("file cant create or append", err)
+
+		return
+	}
+	defer file.Close()
+
+	var data []byte
+	if serializationMode == ManDarAvordiSerializationMode {
+		data = []byte(fmt.Sprintf("id: %d, name: %s, email: %s, password: %s", user.ID, user.Name,
+			user.Email, user.Password))
+
+	} else if serializationMode == JsonSerializationMode {
+		//json
+		var jErr error
+		data, jErr = json.Marshal(user)
+		if jErr != nil {
+			fmt.Println("cant marshal user to struct", jErr)
+
+			return
+		}
+
+		data = append(data, []byte("\n")...)
+
+	} else {
+		fmt.Println("invalid serialization mode")
+
+		return
+	}
+
+	var wErr error
+	numberOfWrittenByte, wErr := file.Write(data)
+	if wErr != nil {
+		fmt.Printf("cant write in file ,  %v\n", wErr)
+	}
+	fmt.Println("number of written byte", numberOfWrittenByte)
+
+}
+
 func runCommand(command string) {
 	if command != "register-user" && command != "exit" && command != "login" && authenticatedUser == nil {
 		login()
@@ -267,46 +352,6 @@ func registerUser() {
 	userStorage = append(userStorage, user)
 	//fmt.Printf("userStorage: %+v\n", userStorage)
 	writeUserToFile(user)
-}
-
-func writeUserToFile(user User) {
-
-	//save user data in user.txt
-
-	file, err := os.OpenFile(userStoragePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println("file cant create or append", err)
-
-		return
-	}
-	defer file.Close()
-
-	var data []byte
-	if serializationMode == ManDarAvordiSerializationMode {
-		data = []byte(fmt.Sprintf("id: %d, name: %s, email: %s, password: %s", user.ID, user.Name,
-			user.Email, user.Password))
-	} else if serializationMode == JsonSerializationMode {
-		//json
-		var jErr error
-		data, jErr = json.Marshal(user)
-		if jErr != nil {
-			fmt.Println("cant marshal user to struct", jErr)
-
-			return
-		}
-	} else {
-		fmt.Println("invalid serialization mode")
-
-		return
-	}
-
-	var wErr error
-	numberOfWrittenByte, wErr := file.Write(data)
-	if wErr != nil {
-		fmt.Printf("cant write in file ,  %v\n", wErr)
-	}
-	fmt.Println("number of written byte", numberOfWrittenByte)
-
 }
 
 func login() {
