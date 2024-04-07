@@ -52,7 +52,7 @@ const (
 
 func main() {
 
-	fmt.Println("Welcome To App☻ ♥")
+	fmt.Println("Welcome To App☻ ♥ ♥")
 
 	serializeMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
 	command := flag.String("command", "no command", "run command")
