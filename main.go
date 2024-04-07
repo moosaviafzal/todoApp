@@ -79,7 +79,7 @@ func main() {
 }
 
 func loadUserStorageFromFile(serializationMode string) {
-
+	//interface
 	//load user storage from file
 
 	file, err := os.Open(userStoragePath)
