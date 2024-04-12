@@ -78,6 +78,10 @@ func main() {
 	}
 }
 
+func init() {
+	fmt.Println("init func")
+}
+
 func loadUserStorageFromFile(serializationMode string) {
 	//interface
 	//load user storage from file
