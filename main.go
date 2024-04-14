@@ -54,6 +54,11 @@ func main() {
 
 	fmt.Println("Welcome To App☻ ♥ ♥")
 
+	a1, a2, a3, _ := chandReturn()
+	if a1 == "a1salam" {
+		fmt.Println("khosh omadi a1", a2, a3)
+	}
+
 	serializeMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
 	command := flag.String("command", "no command", "run command")
 	flag.Parse()
@@ -387,4 +392,8 @@ func login() {
 		fmt.Println("The email or password is incorrect , try again 0r register-user")
 
 	}
+}
+
+func chandReturn() (a1, a2, a3, a4 string) {
+	return "a1 salam", "a2 khobi ", "a3 khobam", "a4 we are too good"
 }
