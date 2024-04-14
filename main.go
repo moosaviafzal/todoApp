@@ -104,6 +104,9 @@ func loadUserStorageFromFile(serializationMode string) {
 		}
 		//fmt.Println(data)
 	}
+
+	var salam = data
+	fmt.Println("salam salam", salam)
 	var datastr = string(data)
 
 	userSlice := strings.Split(datastr, "\n")
