@@ -36,6 +36,10 @@ type Category struct {
 	UserID int
 }
 
+type methTest struct {
+	ID uint
+}
+
 var (
 	userStorage       []User
 	taskStorage       []Task
@@ -54,9 +58,9 @@ func main() {
 
 	fmt.Println("Welcome To App☻ ♥ ♥")
 
-	a1, a2, a3, _ := chandReturn()
-	if a1 == "a1salam" {
-		fmt.Println("khosh omadi a1", a2, a3)
+	a1, a2, a3, a4, s3 := chandReturn(45, 2)
+	if a1 == "a1 salam" {
+		fmt.Println("khosh omadi a1", a2, a3, a4, s3)
 	}
 
 	serializeMode := flag.String("serialize-mode", ManDarAvordiSerializationMode, "save mandaravordi serialize data user ")
@@ -397,6 +401,13 @@ func login() {
 	}
 }
 
-func chandReturn() (a1, a2, a3, a4 string) {
-	return "a1 salam", "a2 khobi ", "a3 khobam", "a4 we are too good"
+func chandReturn(b1, b2 int) (a1, a2, a3, a4 string, s3 int) {
+	s3 = b1 * b2
+	return "a1 salam", "a2 khobi ", "a3 khobam", "a4 we are too good", s3
+
+}
+
+func (a methTest) meTest() {
+	fmt.Printf("salam in hast method a %v", a.ID)
+
 }
