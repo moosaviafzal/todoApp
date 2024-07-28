@@ -387,9 +387,3 @@ func login() {
 
 	}
 }
-
-func chandReturn(b1, b2 int) (a1, a2, a3, a4 string, s3 int) {
-	s3 = b1 * b2
-	return "a1 salam", "a2 khobi ", "a3 khobam", "a4 we are too good", s3
-
-}
